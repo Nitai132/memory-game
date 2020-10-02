@@ -43,7 +43,13 @@ const Memory = () => {
 
     useEffect(() => {
         if(solvedCards.length == 40) {
-            alert(`well done! steps: ${steps}`)
+            alert(`well done! steps: ${steps}`);
+            setFlipped([]);
+            setSteps(0)
+            setsolvedCards([]);
+            const newCards = cards;
+            shuffleArray(newCards);
+            setCards(newCards)
         }
     }, [solvedCards])
 
