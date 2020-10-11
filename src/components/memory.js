@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './memory.css';
 
-
+const API_IMAGES = 'https://rickandmortyapi.com/api/character/'
+const UNFLIPPED_CARD = 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTuZ_BEPJuL-5TwnJOujngdGvujcGzH_jqyrw&usqp=CAU'
 const shuffleArray = (array) => {
     for (var i = array.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
@@ -19,7 +20,7 @@ const Memory = () => {
     const [disable, setDisable] = useState(false);
 
     const onClick = (idx) => {
-        if (disable == false && solvedCards.includes(idx) === false) {
+        if (!disable && !solvedCards.includes(idx)) {
             if (flipped.length < 2 && flipped.includes(idx) == false) {
                 setFlipped([...flipped, idx]);
             }
@@ -54,14 +55,10 @@ const Memory = () => {
     }, [solvedCards])
 
     useEffect(() => {
-        fetch('https://rickandmortyapi.com/api/character/')
+        fetch(API_IMAGES)
             .then(res => res.json())
             .then(({ results }) => {
-                const paths = results.map(({image, id}) => {
-                    return {
-                        image, id
-                    }
-                });
+                const paths = results.map(({image, id}) => ({image, id}));
                 const cards = paths.concat(paths);
                 shuffleArray(cards);
                 setCards(cards);
@@ -69,10 +66,18 @@ const Memory = () => {
     }, []);
 
     return <div className="board">
-        <h1>Your steps {steps}</h1>
-        {cards.map((card, idx) => <div className="card" key={idx}>
-          <img onClick={()=> {onClick(idx)}}  width="150" src={flipped.includes(idx) || solvedCards.includes(idx) ? card.image : "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTuZ_BEPJuL-5TwnJOujngdGvujcGzH_jqyrw&usqp=CAU"}/>
-        </div>)}
+        <h1>
+            Your steps {steps}
+        </h1>
+        {
+            cards.map((card, idx) => <div className="card" key={idx}>
+            <img 
+                onClick={()=> onClick(idx)}
+                width="150" 
+                src={flipped.includes(idx) || solvedCards.includes(idx) ? card.image : UNFLIPPED_CARD}
+            />
+            </div>)
+        }
     </div>
 }
 
